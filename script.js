@@ -441,8 +441,12 @@ document.addEventListener('DOMContentLoaded', () => {
           cell.style.height = `${cellSize}px`;
           // Ensure font size doesn't get too tiny and has a reasonable minimum.
           // Also, ensure it's not excessively large if cellSize is big.
-          const fontSize = Math.max(8, Math.min(cellSize * 0.6, 24)); // e.g. min 8px, max 24px, 60% of cell size
-          cell.style.fontSize = `${fontSize}px`;
+          const MIN_CELL_FONT_SIZE = 10; // Minimum font size in pixels
+          const MAX_CELL_FONT_SIZE = 24; // Maximum font size in pixels
+          const FONT_TO_CELL_RATIO = 0.6; // Font size as a ratio of cell size
+
+          let calculatedFontSize = cellSize * FONT_TO_CELL_RATIO;
+          cell.style.fontSize = `${Math.max(MIN_CELL_FONT_SIZE, Math.min(calculatedFontSize, MAX_CELL_FONT_SIZE))}px`;
 
           cell.addEventListener("mousedown", startDrag);
           cell.addEventListener("mouseenter", dragOver);
