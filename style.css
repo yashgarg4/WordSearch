@@ -217,7 +217,7 @@ canvas {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between; /* Ensure space is between main block and timer */
   /* justify-content: center; /* Alternative to space-evenly if too much stretching */
   text-align: center;
   color: white;
@@ -303,6 +303,7 @@ canvas {
   /* Consider a slightly larger gap for more breathing room: */
   /* gap: 8px; */
   justify-content: center;
+  margin-bottom: 20px; /* Added space below the grid */
   margin-top: 20px;
   padding: 10px; /* Add padding around the grid */
   background-color: rgba(20, 20, 25, 0.3); /* Subtle dark background for the grid area */
@@ -506,7 +507,7 @@ canvas {
 
 .game-container > .btn { /* End Game button */
   flex-shrink: 0; /* Prevent shrinking */
-  margin-top: 20px; /* Push to bottom if there's extra space */
+  margin-top: auto; /* Pushes to bottom if .game-container has extra vertical space */
 }
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
@@ -660,11 +661,14 @@ canvas {
     max-width: min(90vw, 700px); /* Allow game area to be a bit wider in landscape */
     max-height: 95vh;            /* Constrain height, ensure it fits */
     padding: 15px;
+    /* Adjust base font size for landscape to prevent text elements from being too large vertically */
+    font-size: clamp(1.1rem, 2.5vh, 1.5rem); 
     /* overflow-y: auto; Removed to prevent scrolling */
   }
 
   .game-container {
      max-width: 100%; /* Allow game container to fill the new gameplay-content width */
+     padding: 10px; /* Reduce padding for landscape */
   }
 
   #words-list {
@@ -701,6 +705,7 @@ canvas {
     .gameplay-content {
       padding: 10px;
       font-size: 1rem; /* Reduce base font for very short game area */
+      /* max-height: 95vh; */ /* Already inherited from general landscape */
       max-height: 95vh; /* Ensure it fits vertically */
     }
     .game-container h1 { /* Level title */
@@ -710,6 +715,9 @@ canvas {
      .progress-bar-wrapper {
       height: 12px;
       margin-bottom: 10px;
+    }
+    .game-container { /* Further reduce padding for very short landscape */
+        padding: 5px;
     }
     .words-box h2 {
       font-size: 0.9rem;
