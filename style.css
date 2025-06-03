@@ -1,8 +1,10 @@
 html,
 body {
+  height: 100%; /* Ensure body takes full viewport height for consistent measurements */
   margin: 0;
   padding: 0;
   overflow: hidden;
+  overscroll-behavior: none; /* Prevent pull-to-refresh or overscroll effects */
   font-family: "Comic Sans MS", sans-serif;
 }
 
@@ -99,8 +101,8 @@ canvas {
 .instructions-panel {
   position: fixed;
   top: 50%;
-  left: 48%;
-  right: -30%;
+  left: 50%; /* Corrected for standard centering */
+  /* right: -30%; Removed, max-width handles width */
   transform: translate(-50%, -50%) scale(0.8);
   background: #ffffffee;
   border: 4px solid #a855f7;
@@ -208,7 +210,7 @@ canvas {
 .gameplay-panel.show {
   opacity: 1;
   pointer-events: auto;
-  display: block; /* Ensure this is set if it was 'none' before */
+  display: flex; /* Changed from block to flex to honor centering */
 }
 
 .gameplay-content {
@@ -216,14 +218,16 @@ canvas {
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
+  /* justify-content: center; /* Alternative to space-evenly if too much stretching */
   text-align: center;
   color: white;
   font-size: 2rem;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.7);
+  /* background-color: rgba(0, 0, 0, 0.7); */
   border-radius: 10px;
-  height: 100%;
-  width: 100%;
+  /* height: 100%; Removed, let content and max-height define it */
+  /* width: 100%; Removed, let max-width define it */
+  overflow: hidden; /* Prevent internal content from causing scroll on this element */
   max-width: 600px;
 }
 
@@ -262,10 +266,15 @@ canvas {
 
 /* Game Screen Styling (from injected HTML) */
 .game-container {
+  display: flex; /* Enable flexbox for internal layout */
+  flex-direction: column; /* Stack children vertically */
+  height: 100%; /* Take full height of its parent (.gameplay-content) */
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
   color: white; /* Ensure text is visible on dark background */
+  overflow: hidden; /* Crucial: prevent children from overflowing and causing scroll */
+  box-sizing: border-box; /* Ensure padding is included in width/height calculations */
 }
 
 .progress-bar-wrapper {
@@ -274,6 +283,7 @@ canvas {
   height: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
+  flex-shrink: 0; /* Prevent shrinking */
   overflow: hidden;
 }
 
@@ -286,6 +296,9 @@ canvas {
 
 .grid {
   display: grid;
+  flex-grow: 1; /* Allow grid to take available vertical space */
+  flex-shrink: 1; /* Allow grid to shrink if not enough space */
+  min-height: 0; /* Essential for flex children that might overflow vertically */
   gap: 8px; /* Increased from 5px for more spacing */
   /* Consider a slightly larger gap for more breathing room: */
   /* gap: 8px; */
@@ -294,6 +307,7 @@ canvas {
   padding: 10px; /* Add padding around the grid */
   background-color: rgba(20, 20, 25, 0.3); /* Subtle dark background for the grid area */
   border-radius: 12px; /* Rounded corners for the grid container */
+  aspect-ratio: 1 / 1; /* Make the grid container square */
   box-shadow: inset 0 0 8px rgba(0,0,0,0.4); /* Inner shadow for a bit of depth */
 }
 
@@ -359,6 +373,7 @@ canvas {
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 4px 8px rgba(0,0,0,0.2), inset 0 0 5px rgba(0,0,0,0.1); /* Outer and inner shadow for depth */
   max-width: 80%; /* Control width if needed */
+  flex-shrink: 0; /* Prevent shrinking in the flex layout of game-container */
 }
 
 .words-box h2 {
@@ -443,11 +458,11 @@ canvas {
 /* .overlay class is already defined for the home screen, let's use #pause-overlay for specificity */
 #pause-overlay.overlay { /* More specific selector for pause overlay */
   position: fixed;
-  top: 458px;
-  left: 208px;
+  top: 458px; /* Corrected for full screen overlay */
+  left: 206px; /* Corrected for full screen overlay */
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.4);
   z-index: 15; /* Ensure it's above game content but below popups if necessary */
   display: flex;
   justify-content: center;
@@ -489,6 +504,10 @@ canvas {
   opacity: 0.4;
 }
 
+.game-container > .btn { /* End Game button */
+  flex-shrink: 0; /* Prevent shrinking */
+  margin-top: 20px; /* Push to bottom if there's extra space */
+}
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
   .title {
@@ -533,6 +552,7 @@ canvas {
   .gameplay-content {
     padding: 10px;
     font-size: 1.5rem; /* Adjust base font size for gameplay */
+    max-height: 95vh; /* Ensure it fits vertically */
   }
 
   #words-list {
@@ -601,5 +621,110 @@ canvas {
   .pause-btn {
     font-size: 20px;
     padding: 5px 10px;
+  }
+}
+
+/* General Landscape Adjustments */
+@media (orientation: landscape) {
+  .overlay .title { /* Home screen title */
+    font-size: clamp(2.5rem, 7vh, 3.5rem); /* Responsive font size based on viewport height */
+    margin-bottom: 1vh;
+  }
+  .overlay .subtitle {
+    font-size: clamp(1rem, 4vh, 1.8rem);
+    margin-bottom: 3vh;
+  }
+  .overlay .btn { /* Home screen button */
+    font-size: clamp(1rem, 3.5vh, 1.3rem);
+    padding: clamp(10px, 2vh, 12px) clamp(25px, 3vw, 30px);
+  }
+
+  .instructions-panel,
+  .popup-content {
+    max-width: min(75vw, 550px); /* Adjust max-width for landscape */
+    max-height: 85vh;          /* Prevent taking full viewport height */
+    overflow-y: auto;          /* Allow scrolling for content */
+  }
+  .instructions-panel h2,
+  .popup-content h2 {
+    font-size: clamp(1.3rem, 5vh, 1.6rem);
+    margin-bottom: 15px;
+  }
+   .popup-buttons button {
+    font-size: clamp(0.9rem, 3vh, 1rem);
+    padding: clamp(8px, 1.8vh, 10px) clamp(15px, 2.5vw, 18px);
+  }
+
+  /* Gameplay area in landscape */
+  .gameplay-content {
+    max-width: min(90vw, 700px); /* Allow game area to be a bit wider in landscape */
+    max-height: 95vh;            /* Constrain height, ensure it fits */
+    padding: 15px;
+    /* overflow-y: auto; Removed to prevent scrolling */
+  }
+
+  .game-container {
+     max-width: 100%; /* Allow game container to fill the new gameplay-content width */
+  }
+
+  #words-list {
+    font-size: clamp(0.9rem, 2.5vh, 1.1rem);
+    gap: clamp(10px, 1.5vw, 15px);
+  }
+
+  .words-box {
+    padding: 10px 15px;
+  }
+   .words-box h2 {
+    font-size: clamp(1rem, 3vh, 1.3rem);
+  }
+
+  /* Specific adjustments for very short screens (common in phone landscape) */
+  @media (max-height: 480px) {
+    .overlay .title { font-size: 2rem; }
+    .overlay .subtitle { font-size: 1rem; margin-bottom: 15px;}
+    .overlay .btn { font-size: 0.9rem; padding: 8px 20px; }
+
+    .instructions-panel, .popup-content {
+        padding: 15px;
+    }
+    .instructions-panel h2, .popup-content h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+    .popup-buttons button {
+        font-size: 0.8rem;
+        padding: 7px 12px;
+        margin: 5px;
+    }
+
+    .gameplay-content {
+      padding: 10px;
+      font-size: 1rem; /* Reduce base font for very short game area */
+      max-height: 95vh; /* Ensure it fits vertically */
+    }
+    .game-container h1 { /* Level title */
+      font-size: 1.1rem;
+      margin-bottom: 5px; /* Reduce margin */
+    }
+     .progress-bar-wrapper {
+      height: 12px;
+      margin-bottom: 10px;
+    }
+    .words-box h2 {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    #words-list li, #words-list {
+      font-size: 0.75rem; /* Further reduce word list font */
+      padding: 2px 0;
+      gap: 5px;
+    }
+    .grid { gap: 4px; }
+    #timer { font-size: 0.8rem; margin-top: 5px; }
+    .game-container .btn { /* e.g., End Game button */
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
   }
 }
