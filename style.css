@@ -1,0 +1,605 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Comic Sans MS", sans-serif;
+}
+
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+.overlay {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #ffd700;
+  text-shadow: 2px 2px #000;
+}
+
+.subtitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #e0e0ff;
+  margin-bottom: 30px;
+  text-shadow: 1px 1px #000;
+}
+
+.btn {
+  background: white;
+  color: crimson;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 12px 30px;
+  border: 4px solid #a855f7;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #fff;
+  transition: transform 0.2s ease;
+  animation: pulse 2s infinite;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.help-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+  width: 50px;
+  height: 50px;
+  background: #ffffffaa;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  font-size: 24px;
+  font-weight: bold;
+  color: #4b0082;
+  box-shadow: 0 0 10px #fff;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.help-btn:hover {
+  background: #fff;
+}
+
+.instructions-panel {
+  position: fixed;
+  top: 50%;
+  left: 48%;
+  right: -30%;
+  transform: translate(-50%, -50%) scale(0.8);
+  background: #ffffffee;
+  border: 4px solid #a855f7;
+  border-radius: 20px;
+  padding: 30px;
+  max-width: 500px;
+  text-align: left;
+  color: #333;
+  font-size: 1.1rem;
+  z-index: 3;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.instructions-panel.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+.instructions-panel h2 {
+  margin-top: 0;
+  color: #8a4be3;
+}
+
+.instructions-panel ul {
+  padding-left: 20px;
+  list-style: none;
+}
+
+.instructions-panel .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #a855f7;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.instructions-panel .close-btn:hover {
+  transform: scale(1.2);
+  color: #8a4be3;
+}
+
+.instructions-panel .icon {
+  display: inline-block;
+  margin-right: 10px;
+  animation: pulseIcon 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseIcon {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.blur-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.blur-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Gameplay Panel */
+.gameplay-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s ease;
+}
+
+.gameplay-panel.show {
+  opacity: 1;
+  pointer-events: auto;
+  display: block; /* Ensure this is set if it was 'none' before */
+}
+
+.gameplay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  height: 100%;
+  width: 100%;
+  max-width: 600px;
+}
+
+.top-panel {
+  color: white;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#words-list { /* Ensure this matches the ID in your dynamically generated HTML */
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 1.2rem;
+}
+
+.grid-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* #gameCanvas is for the background, the game grid itself is #grid */
+/* #gameCanvas {
+  background: #222224;
+  border: 4px solid #fff;
+  border-radius: 10px;
+  position: relative;
+  max-width: 100%;
+  height: auto;
+} */
+
+/* Game Screen Styling (from injected HTML) */
+.game-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  color: white; /* Ensure text is visible on dark background */
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+  background-color: #ddd;
+  height: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #4caf50;
+  transition: width 0.5s ease-in-out;
+}
+
+.grid {
+  display: grid;
+  gap: 8px; /* Increased from 5px for more spacing */
+  /* Consider a slightly larger gap for more breathing room: */
+  /* gap: 8px; */
+  justify-content: center;
+  margin-top: 20px;
+  padding: 10px; /* Add padding around the grid */
+  background-color: rgba(20, 20, 25, 0.3); /* Subtle dark background for the grid area */
+  border-radius: 12px; /* Rounded corners for the grid container */
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.4); /* Inner shadow for a bit of depth */
+}
+
+.grid-cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle light border */
+  font-size: 18px;
+  font-weight: bold; /* Make letters stand out more */
+  /* text-shadow: 1px 1px 2px rgba(0,0,0,0.5); */ /* Subtle text shadow for depth */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  color: white; /* Ensure letters are visible */
+  background: linear-gradient(145deg, #4a4e69, #2c314f); /* Dark purple/blue gradient */
+  border-radius: 8px; /* Slightly larger rounding */
+  transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), 
+              background 0.3s ease, 
+              box-shadow 0.3s ease; /* Smooth transitions with custom cubic-bezier */
+  box-shadow: 0 3px 6px rgba(0,0,0,0.25), /* Base shadow */
+              inset 0 1px 1px rgba(255,255,255,0.05), /* Inner highlight */
+              inset 0 -1px 1px rgba(0,0,0,0.1); /* Inner bottom shadow */
+}
+
+.grid-cell:hover {
+  transform: scale(1.1) translateY(-3px); /* More pronounced scale and lift */
+  background: linear-gradient(145deg, #5f6791, #3a406a); /* Lighter gradient on hover */
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3), /* Enhanced outer shadow */
+              inset 0 1px 1px rgba(255,255,255,0.1),
+              inset 0 -1px 1px rgba(0,0,0,0.15);
+}
+
+.grid-cell.selected {
+  background: linear-gradient(145deg, #ffeb3b, #fbc02d); /* Vibrant yellow/gold gradient */
+  color: black;
+  transform: scale(1.15) translateY(-2px); /* Even more pop */
+  box-shadow: 0 0 10px #ffeb3b, /* Soft glow */
+              0 0 20px rgba(255, 235, 59, 0.6), /* Wider glow */
+              inset 0 1px 1px rgba(255,255,255,0.2),
+              inset 0 -1px 1px rgba(0,0,0,0.1);
+}
+
+.grid-cell.found {
+  background: linear-gradient(145deg, #81c784, #4caf50); /* Green gradient */
+  color: black;
+  transform: scale(1.1) translateY(-1px); /* Pop for found words */
+  box-shadow: 0 0 8px #81c784, /* Soft green glow */
+              0 0 15px rgba(129, 199, 132, 0.5), /* Wider green glow */
+              inset 0 1px 1px rgba(255,255,255,0.15),
+              inset 0 -1px 1px rgba(0,0,0,0.1);
+}
+
+.words-box {
+  /* border: 1px solid #ccc; */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* Lighter, more subtle border */
+  margin: 10px auto;
+  padding: 15px 20px; /* Increased padding */
+  text-align: left;
+  color: white; /* Ensure text is visible */
+  background-color: rgba(0, 0, 0, 0.25); /* Slightly darker, translucent background */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2), inset 0 0 5px rgba(0,0,0,0.1); /* Outer and inner shadow for depth */
+  max-width: 80%; /* Control width if needed */
+}
+
+.words-box h2 {
+  margin-top: 0;
+  margin-bottom: 12px; /* Space below heading */
+  color: #ffd700; /* Gold color for the heading, matching title */
+  font-size: 1.4rem; /* Slightly larger heading */
+  text-align: center; /* Center the heading */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Text shadow for heading */
+}
+
+#words-list li { /* Styling for the list items in words-box */
+ color: white;
+ padding: 4px 0; /* Add some padding to list items */
+ font-size: 1.1rem; 
+ text-decoration: none; /* Base style, strikethrough will be applied by a class */
+ transition: color 0.3s ease, opacity 0.3s ease, text-decoration-color 0.3s ease; /* Smooth transitions */
+}
+
+#words-list li.found-word {
+  color: #a0a0a0; /* Light grey color for found words */
+  opacity: 0.7; /* Slightly fade out found words */
+  text-decoration: line-through;
+  text-decoration-color: #ffd700; /* Make strikethrough color gold, for example */
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.popup.hidden {
+  display: none;
+}
+
+.popup-content {
+  background-color: white;
+  color: black;
+  padding: 35px 40px; /* Increased padding */
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  max-width: 500px; /* Default max-width */
+}
+.popup-content h2 {
+  font-size: 1.8rem; /* Slightly larger heading */
+  margin-bottom: 20px;
+}
+
+.popup-buttons button {
+  padding: 10px 20px;
+  margin: 10px;
+  font-size: 1.1rem; /* Slightly larger button text */
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+}
+
+.popup-buttons button:hover {
+  background-color: #0056b3;
+}
+
+#timer {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: white; /* Ensure timer is visible */
+}
+
+/* Pause Overlay */
+/* .overlay class is already defined for the home screen, let's use #pause-overlay for specificity */
+#pause-overlay.overlay { /* More specific selector for pause overlay */
+  position: fixed;
+  top: 458px;
+  left: 208px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 15; /* Ensure it's above game content but below popups if necessary */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#pause-overlay .overlay-content { /* Specific to pause overlay content */
+  background-color: white;
+  color: black; /* Text color for pause message */
+  padding: 35px 55px; /* Increased padding */
+  border-radius: 10px;
+  font-size: 2rem; /* Increased font size */
+  font-weight: bold;
+  text-align: center; /* Center the text content */
+  max-width: 400px; /* Constrain width like other popups */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+.hidden { /* General hidden class */
+  display: none !important; /* Use important to override other display properties if needed */
+}
+
+.pause-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #fff;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 20; /* Ensure pause button is on top */
+}
+
+.pause-btn.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+  .title {
+    font-size: 2.5rem; /* Smaller title */
+  }
+
+  .subtitle {
+    font-size: 1.2rem; /* Smaller subtitle */
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    font-size: 1.1rem; /* Smaller button text */
+    padding: 10px 20px; /* Smaller button padding */
+    border-width: 3px;
+  }
+
+  .help-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    top: 15px;
+    right: 15px;
+  }
+
+  .instructions-panel {
+    padding: 20px;
+    font-size: 0.9rem;
+    max-width: 90%; /* Allow panel to use more screen width */
+  }
+
+  .instructions-panel h2 {
+    font-size: 1.5rem;
+  }
+
+  .instructions-panel .close-btn {
+    font-size: 20px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .gameplay-content {
+    padding: 10px;
+    font-size: 1.5rem; /* Adjust base font size for gameplay */
+  }
+
+  #words-list {
+    gap: 10px; /* Smaller gap between words */
+    font-size: 0.9rem; /* Smaller font for word list */
+    flex-wrap: wrap; /* Allow words to wrap to the next line */
+  }
+
+  .game-container h1 { /* Level title */
+    font-size: 1.5rem;
+  }
+
+  .progress-bar-wrapper {
+    height: 15px;
+    margin-bottom: 15px;
+  }
+
+  .grid {
+    gap: 5px; /* Smaller gap between grid cells */
+    padding: 5px;
+  }
+
+  /* Assuming JS adjusts cell size, but we can set a smaller base/max if needed */
+  /* .grid-cell {
+    width: 30px; 
+    height: 30px;
+    font-size: 14px; 
+  } */
+
+  .words-box {
+    padding: 10px 15px;
+    max-width: 95%;
+  }
+  .words-box h2 {
+    font-size: 1.2rem; /* Smaller heading for "Words to Find" */
+  }
+  #words-list li {
+    font-size: 0.9rem; /* Smaller font for words in the list */
+  }
+
+  #timer {
+    font-size: 1rem; /* Smaller timer font */
+    margin-top: 5px;
+  }
+
+  .popup-content {
+    padding: 20px;
+    max-width: 95%; /* Allow more width on small screens */
+  }
+  .popup-content h2 {
+    font-size: 1.5rem; /* Larger popup heading on mobile */
+    margin-bottom: 15px;
+  }
+  .popup-buttons button {
+    font-size: 1rem; /* Larger button text on mobile */
+    padding: 10px 18px;
+    margin: 8px 5px;
+  }
+
+  #pause-overlay .overlay-content {
+    padding: 20px 30px;
+    font-size: 1.5rem;
+    max-width: 85%; /* Adjust max-width for smaller screens */
+  }
+
+  .pause-btn {
+    font-size: 20px;
+    padding: 5px 10px;
+  }
+}

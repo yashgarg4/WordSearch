@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Search Game</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- <script
+      async
+      src="https://jiogames.akamaized.net/gameSDK/jiogames/stable/v2.0/jiogames_sdk.js"
+      data-jg-test-environment="on"
+      data-jg-packagename="com.jiogames.testsp"
+      data-jioads-interstitial="zbjnq9gs"
+      data-jioads-rewarded="81xnt9bw"
+    ></script> -->
+    <script
+      async
+      src="https://jiogames.akamaized.net/gameSDK/jiogames/stable/v2.0/jiogames_sdk.js"
+      data-jg-test-environment="on"
+    ></script>
+  </head>
+  <body>
+    <canvas id="bg"></canvas>
+    <div class="blur-overlay" id="blur"></div>
+
+    <button class="help-btn" onclick="toggleInstructions()">?</button>
+
+    <div class="instructions-panel" id="instructions">
+      <button class="close-btn" onclick="toggleInstructions()">×</button>
+      <h2>How to Play</h2>
+      <ul>
+        <li>
+          <span class="icon">🔍</span> Find all the hidden words in the grid.
+        </li>
+        <li>
+          <span class="icon">↔️</span> Words can be horizontal, vertical, or
+          diagonal.
+        </li>
+        <li><span class="icon">🖐️</span> Tap and drag to select a word.</li>
+        <li>
+          <span class="icon">🚀</span> Each level becomes more challenging!
+        </li>
+        <li><span class="icon">🎉</span> Good luck and have fun!</li>
+      </ul>
+    </div>
+
+    <div class="overlay">
+      <div class="title">WORD</div>
+      <div class="subtitle">SEARCH</div>
+      <button class="btn" onclick="startGame()">Level 1</button>
+    </div>
+
+    <div class="gameplay-panel" id="gameplay-panel">
+      <div class="gameplay-content" id="gameplay-content">
+        <!-- Injected content from gamescreen.html -->
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
