@@ -401,7 +401,33 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       gridContainer.innerHTML = "";
       gridContainer.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-      const cellSize = Math.min(40, (gridContainer.offsetWidth / size) * 0.9);
+      // gridContainer.style.gridTemplateRows = `repeat(${size}, 1fr)`; // Already handled by aspect-ratio: 1/1 in CSS
+
+      // Ensure the grid container is part of the layout and has dimensions
+      // It should already be displayed by the time this function is called.
+
+      const gridStyles = getComputedStyle(gridContainer);
+      const gap = parseFloat(gridStyles.gap) || 0; // Get the computed gap
+
+      // Usable width/height for cells, after accounting for the grid's own padding
+      const containerPaddingHorizontal = parseFloat(gridStyles.paddingLeft) + parseFloat(gridStyles.paddingRight);
+      const containerPaddingVertical = parseFloat(gridStyles.paddingTop) + parseFloat(gridStyles.paddingBottom);
+
+      //offsetWidth/Height includes padding and border, but not margin.
+      // Since .grid has box-sizing: border-box (implicitly via .game-container), offsetWidth is fine.
+      const availableWidthForGridContent = gridContainer.offsetWidth - containerPaddingHorizontal;
+      const availableHeightForGridContent = gridContainer.offsetHeight - containerPaddingVertical;
+
+      // Calculate space purely for cells, after removing space taken by all gaps
+      const totalGapWidth = (size - 1) * gap;
+      const totalGapHeight = (size - 1) * gap;
+
+      const spaceForCellsX = availableWidthForGridContent - totalGapWidth;
+      const spaceForCellsY = availableHeightForGridContent - totalGapHeight;
+
+      // Since the .grid container has aspect-ratio: 1/1 and we use 1fr for columns/rows,
+      // cellWidthBasedOnSpace and cellHeightBasedOnSpace should be nearly identical.
+      let cellSize = Math.min(spaceForCellsX / size, spaceForCellsY / size);
 
       for (let y = 0; y < size; y++) {
         for (let x = 0; x < size; x++) {
@@ -413,7 +439,10 @@ document.addEventListener('DOMContentLoaded', () => {
           cell.dataset.letter = gridData[y][x];
           cell.style.width = `${cellSize}px`;
           cell.style.height = `${cellSize}px`;
-          cell.style.fontSize = `${cellSize * 0.5}px`;
+          // Ensure font size doesn't get too tiny and has a reasonable minimum.
+          // Also, ensure it's not excessively large if cellSize is big.
+          const fontSize = Math.max(8, Math.min(cellSize * 0.6, 24)); // e.g. min 8px, max 24px, 60% of cell size
+          cell.style.fontSize = `${fontSize}px`;
 
           cell.addEventListener("mousedown", startDrag);
           cell.addEventListener("mouseenter", dragOver);
