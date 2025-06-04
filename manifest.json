@@ -3,7 +3,7 @@
   "version_code": 2,
   "name": "Common Game",
   "package_name": "com.jiogames.commongame",
-  "description": "Enter the discription of the game.",
+  "description": "Enter the description of the game.",
   "launch_path": "index.html",
   "icons": {    
     "128": "images/icons/icon128x128.png"
@@ -14,7 +14,7 @@
   },
   "ad_config": {
     "android": {
-      "package_name": "ccom.jiogames.testsp",
+      "package_name": "com.jiogames.testsp",
       "interstitial": "zbjnq9gs",
       "rewarded": "81xnt9bw",
       "banner": "sdsfdft32"
