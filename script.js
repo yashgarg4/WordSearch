@@ -1,7 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("bg");
   if (!canvas) {
-    console.error("Canvas element with ID 'bg' not found. Ensure it exists in your HTML and the script is loaded correctly.");
+    console.error(
+      "Canvas element with ID 'bg' not found. Ensure it exists in your HTML and the script is loaded correctly."
+    );
     return;
   }
   const ctx = canvas.getContext("2d");
@@ -136,13 +138,18 @@ document.addEventListener('DOMContentLoaded', () => {
     requestAnimationFrame(animate);
   }
 
-  animate();
-
-  // Responsive canvas
-  window.addEventListener("resize", () => {
+  // Function to update canvas size and button width on resize
+  function handleResize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  });
+    // Update button width if the game is currently displayed
+    if (document.getElementById("gameplay-panel")?.classList.contains("show")) {
+      updateEndGameButtonWidth();
+    }
+  }
+
+  animate();
+  window.addEventListener("resize", handleResize);
 
   function toggleInstructions() {
     const panel = document.getElementById("instructions");
@@ -161,6 +168,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (gameplayPanel) gameplayPanel.classList.remove("show");
     if (overlay) overlay.style.display = "flex";
+
+    window.JioGames?.showAd(AdType.Interstitial, {
+      onAdClosed: function () {
+        console.log("index : Interstitial Ad closed.");
+      },
+      onAdFailedToLoad: function (error) {
+        console.log("index : Failed to load Interstitial Ad: " + error);
+      },
+    });
   }
 
   function startGame() {
@@ -188,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </section>
 
     <section id="grid" class="grid"></section>
-    <button class="btn" onclick="endGame()">End Game</button>
+    <button class="btn" onclick="endGame()">Home</button>
   </div>
 
   <div id="level-complete-popup" class="popup hidden">
@@ -290,7 +306,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const wordsListEl = document.getElementById("words-list");
 
       if (levelTitleEl) levelTitleEl.innerText = `Level ${levelIndex + 1}`;
-      if (progressBarEl) progressBarEl.style.width = `${(levelIndex / levels.length) * 100}%`;
+      if (progressBarEl)
+        progressBarEl.style.width = `${(levelIndex / levels.length) * 100}%`;
 
       if (wordsListEl) {
         wordsListEl.innerHTML = "";
@@ -319,20 +336,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            if (window.JioGames?.state?.Rewarded?.isAdReady) { // Simpler check
+            if (window.JioGames.state.Rewarded.isAdReady) {
+              // Simpler check
               showContinuePopup();
             } else {
               showGameOverPopup();
-              if (window.JioGames?.showAd && typeof AdType !== 'undefined') { // Revert to direct AdType usage
-                window.JioGames.showAd(AdType.Interstitial, {
-                  onAdClosed: () => {
-                    console.log("Interstitial closed.");
-                    if (window.JioGames?.state?.Interstitial) window.JioGames.state.Interstitial.isAdReady = false;
-                  },
-                  onAdFailedToLoad: (err) =>
-                    console.log("Interstitial error: " + err),
-                });
-              }
+              window.JioGames?.showAd(AdType.Interstitial, {
+                onAdClosed: () => {
+                  console.log("Interstitial closed.");
+                  window.JioGames.state.Interstitial.isAdReady = false;
+                },
+                onAdFailedToLoad: (err) =>
+                  console.log("Interstitial error: " + err),
+              });
               window.JioGames?.postScore?.(0);
             }
           }
@@ -389,7 +405,8 @@ document.addEventListener('DOMContentLoaded', () => {
       for (let y = 0; y < size; y++) {
         for (let x = 0; x < size; x++) {
           if (gridData[y][x] === "") {
-            gridData[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
+            gridData[y][x] =
+              alphabet[Math.floor(Math.random() * alphabet.length)];
           }
         }
       }
@@ -410,13 +427,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const gap = parseFloat(gridStyles.gap) || 0; // Get the computed gap
 
       // Usable width/height for cells, after accounting for the grid's own padding
-      const containerPaddingHorizontal = parseFloat(gridStyles.paddingLeft) + parseFloat(gridStyles.paddingRight);
-      const containerPaddingVertical = parseFloat(gridStyles.paddingTop) + parseFloat(gridStyles.paddingBottom);
+      const containerPaddingHorizontal =
+        parseFloat(gridStyles.paddingLeft) +
+        parseFloat(gridStyles.paddingRight);
+      const containerPaddingVertical =
+        parseFloat(gridStyles.paddingTop) +
+        parseFloat(gridStyles.paddingBottom);
 
       //offsetWidth/Height includes padding and border, but not margin.
       // Since .grid has box-sizing: border-box (implicitly via .game-container), offsetWidth is fine.
-      const availableWidthForGridContent = gridContainer.offsetWidth - containerPaddingHorizontal;
-      const availableHeightForGridContent = gridContainer.offsetHeight - containerPaddingVertical;
+      const availableWidthForGridContent =
+        gridContainer.offsetWidth - containerPaddingHorizontal;
+      const availableHeightForGridContent =
+        gridContainer.offsetHeight - containerPaddingVertical;
 
       // Calculate space purely for cells, after removing space taken by all gaps
       const totalGapWidth = (size - 1) * gap;
@@ -446,7 +469,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const FONT_TO_CELL_RATIO = 0.6; // Font size as a ratio of cell size
 
           let calculatedFontSize = cellSize * FONT_TO_CELL_RATIO;
-          cell.style.fontSize = `${Math.max(MIN_CELL_FONT_SIZE, Math.min(calculatedFontSize, MAX_CELL_FONT_SIZE))}px`;
+          cell.style.fontSize = `${Math.max(
+            MIN_CELL_FONT_SIZE,
+            Math.min(calculatedFontSize, MAX_CELL_FONT_SIZE)
+          )}px`;
 
           cell.addEventListener("mousedown", startDrag);
           cell.addEventListener("mouseenter", dragOver);
@@ -460,6 +486,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.addEventListener("mouseup", endDrag);
       document.addEventListener("touchend", endDrag);
+    }
+
+    // Function to set the End Game button width to half the grid width
+    function updateEndGameButtonWidth() {
+      const gridContainer = document.getElementById("grid");
+      const endGameButton = document.querySelector(".game-container > .btn");
+      if (gridContainer && endGameButton) {
+        const gridWidth = gridContainer.offsetWidth;
+        endGameButton.style.width = `${gridWidth / 2}px`;
+      }
     }
 
     function clearSelection() {
@@ -532,8 +568,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const reversedWord = word.split("").reverse().join("");
 
       const currentWords = levels[currentLevel].words;
-      if ((currentWords.includes(word) || currentWords.includes(reversedWord)) && !foundWords.has(word) && !foundWords.has(reversedWord)) {
-        const foundActualWord = currentWords.includes(word) ? word : reversedWord;
+      if (
+        (currentWords.includes(word) || currentWords.includes(reversedWord)) &&
+        !foundWords.has(word) &&
+        !foundWords.has(reversedWord)
+      ) {
+        const foundActualWord = currentWords.includes(word)
+          ? word
+          : reversedWord;
         foundWords.add(foundActualWord);
         dragPath.forEach((cell) => {
           cell.classList.remove("selected");
@@ -557,11 +599,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const popupEl = document.getElementById(popupId);
       if (popupEl) popupEl.classList.remove("hidden");
       setPauseButtonEnabled(false);
-      if (popupId === "level-complete-popup" && window.JioGames?.showAd && typeof AdType !== 'undefined') {
-        window.JioGames.showAd(AdType.Interstitial, {
+      if (popupId === "level-complete-popup") {
+        window.JioGames?.showAd(AdType.Interstitial, {
           onAdClosed: () => {
             console.log("Interstitial closed.");
-            if (window.JioGames?.state?.Interstitial) window.JioGames.state.Interstitial.isAdReady = false;
+            window.JioGames.state.Interstitial.isAdReady = false;
           },
           onAdFailedToLoad: (err) => console.log("Interstitial error: " + err),
         });
@@ -578,29 +620,49 @@ document.addEventListener('DOMContentLoaded', () => {
     // But since they are part of the injected HTML and initializeGame runs after, direct getElementById is fine here.
 
     const retryBtn = document.getElementById("retry-btn");
-    if (retryBtn) retryBtn.addEventListener("click", () => {
-      hidePopup("level-complete-popup");
-      tryCache();
-      setPauseButtonEnabled(true);
-      foundWords.clear();
-      setupLevel(currentLevel);
-    });
-
-    const nextBtn = document.getElementById("next-btn");
-    if (nextBtn) nextBtn.addEventListener("click", () => {
-      hidePopup("level-complete-popup");
-      tryCache();
-      currentLevel++;
-      setPauseButtonEnabled(true);
-      if (currentLevel < levels.length) {
+    if (retryBtn)
+      retryBtn.addEventListener("click", () => {
+        hidePopup("level-complete-popup");
+        if (!window.JioGames.state.Interstitial.isAdReady) {
+          window.JioGames?.cacheAd(AdType.Interstitial, {
+            onAdPrepared: () =>
+              console.log("Interstitial Ad cached successfully."),
+            onAdFailedToLoad: (error) =>
+              console.log("Interstitial failed: " + error),
+          });
+        }
+        // tryCache();
+        setPauseButtonEnabled(true);
         foundWords.clear();
         setupLevel(currentLevel);
-      } else {
-        showPopup("all-levels-popup");
-      }
-    });
+      });
 
+    const nextBtn = document.getElementById("next-btn");
+    if (nextBtn)
+      nextBtn.addEventListener("click", () => {
+        hidePopup("level-complete-popup");
+        if (!window.JioGames.state.Interstitial.isAdReady) {
+          window.JioGames?.cacheAd(AdType.Interstitial, {
+            onAdPrepared: () =>
+              console.log("Interstitial Ad cached successfully."),
+            onAdFailedToLoad: (error) =>
+              console.log("Interstitial failed: " + error),
+          });
+        }
+        // tryCache();
+        currentLevel++;
+        setPauseButtonEnabled(true);
+        if (currentLevel < levels.length) {
+          foundWords.clear();
+          setupLevel(currentLevel);
+        } else {
+          showPopup("all-levels-popup");
+        }
+      });
+
+    // Initial setup of the level and button width
     setupLevel(currentLevel);
+    updateEndGameButtonWidth(); // Set button width after grid is generated
 
     function showContinuePopup() {
       if (!continueUsed) {
@@ -613,77 +675,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showGameOverPopup() {
       showPopup("gameover-popup");
-      if (window.JioGames?.showAd && typeof AdType !== 'undefined') {
-        window.JioGames.showAd(AdType.Interstitial, {
-          onAdClosed: () => { if (window.JioGames?.state?.Interstitial) window.JioGames.state.Interstitial.isAdReady = false; },
-          onAdFailedToLoad: (error) => console.log("Interstitial failed: " + error),
-        });
-      }
-      window.JioGames?.postScore?.(0);
+      window.JioGames?.showAd(AdType.Interstitial, {
+        onAdClosed: () =>
+          (window.JioGames.state.Interstitial.isAdReady = false),
+        onAdFailedToLoad: (error) =>
+          console.log("Interstitial failed: " + error),
+      });
+      window.JioGames?.postScore(0);
     }
 
     const continueYesBtn = document.getElementById("continue-yes");
-    if (continueYesBtn) continueYesBtn.addEventListener("click", () => {
-      if (window.JioGames && window.JioGames.showAd && window.JioGames.AdType) {
-        window.JioGames.showAd(window.JioGames.AdType.Rewarded, {
+    if (continueYesBtn)
+      continueYesBtn.addEventListener("click", () => {
+        window.JioGames?.showAd(AdType.Rewarded, {
           onAdClosed: function (isRewardUser) {
+            console.log("index : Rewarded Ad closed.");
             if (isRewardUser) {
               console.log("Rewarded Ad closed. User received reward.");
               extraTimeUsed = true;
               hidePopup("continue-popup");
               setPauseButtonEnabled(true);
               startTimer();
-            } else {
-              hidePopup("continue-popup");
-              showGameOverPopup();
-              console.log("Rewarded Ad closed. User did NOT receive reward.");
             }
           },
           onAdFailedToLoad: function (error) {
             console.log("Failed to load Rewarded Ad: " + error);
-            // Fallback: if ad fails to load, don't grant reward and go to game over.
-            hidePopup("continue-popup");
-            showGameOverPopup();
           },
         });
-      } else {
-        // Fallback if SDK not available or AdType is missing
-        console.warn("JioGames SDK or AdType not available for rewarded ad. Granting reward directly for testing or fallback.");
-        extraTimeUsed = true; // Grant reward in fallback
-        hidePopup("continue-popup");
-        setPauseButtonEnabled(true);
-        startTimer();
-      }
-    });
+      });
 
     const continueNoBtn = document.getElementById("continue-no");
-    if (continueNoBtn) continueNoBtn.addEventListener("click", () => {
-      hidePopup("continue-popup");
-      showGameOverPopup();
-    });
+    if (continueNoBtn)
+      continueNoBtn.addEventListener("click", () => {
+        hidePopup("continue-popup");
+        showGameOverPopup();
+      });
 
     const replayBtn = document.getElementById("replay-btn");
-    if (replayBtn) replayBtn.addEventListener("click", () => {
-      hidePopup("gameover-popup");
-      foundWords.clear();
-      extraTimeUsed = false;
-      continueUsed = false;
-      setPauseButtonEnabled(true);
-      setupLevel(currentLevel);
-      tryCache();
-    });
+    if (replayBtn)
+      replayBtn.addEventListener("click", () => {
+        hidePopup("gameover-popup");
+        foundWords.clear();
+        extraTimeUsed = false;
+        continueUsed = false;
+        setPauseButtonEnabled(true);
+        setupLevel(currentLevel);
+        updateEndGameButtonWidth(); // Update button width on replay
+        tryCache();
+      });
 
     const homeBtn = document.getElementById("home-btn");
-    if (homeBtn) homeBtn.addEventListener("click", () => {
-      hidePopup("gameover-popup");
-      endGame();
-    });
+    if (homeBtn)
+      homeBtn.addEventListener("click", () => {
+        hidePopup("gameover-popup");
+        continueUsed = false;
+        endGame();
+      });
 
     const homeBtnFinal = document.getElementById("home-btn-final");
-    if (homeBtnFinal) homeBtnFinal.addEventListener("click", () => {
-      hidePopup("all-levels-popup");
-      endGame();
-    });
+    if (homeBtnFinal)
+      homeBtnFinal.addEventListener("click", () => {
+        hidePopup("all-levels-popup");
+        endGame();
+      });
 
     if (pauseBtn) {
       pauseBtn.addEventListener("click", () => {
@@ -710,26 +764,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function tryCache() {
-      if (!window.JioGames?.cacheAd || typeof AdType === 'undefined') {
-        console.warn("JioGames SDK cacheAd function or AdType not available.");
-        return;
-      }
+      // Cache Interstitial Ad
 
-      if (!window.JioGames.state?.Interstitial?.isAdReady) {
-        window.JioGames.cacheAd(AdType.Interstitial, {
-          onAdPrepared: () => console.log("Interstitial Ad cached successfully."),
-          onAdFailedToLoad: (error) => console.log("Interstitial failed: " + error),
+      window.JioGames?.cacheAd(AdType.Interstitial, {
+        onAdPrepared: () => console.log("Interstitial Ad cached successfully."),
+        onAdFailedToLoad: (error) =>
+          console.log("Interstitial failed: " + error),
+      });
+
+      // Cache Rewarded Ad
+
+      setTimeout(() => {
+        window.JioGames?.cacheAd(AdType.Rewarded, {
+          onAdPrepared: () => console.log("Rewarded Ad cached successfully."),
+          onAdFailedToLoad: (error) => console.log("Rewarded failed: " + error),
         });
-      }
-
-      if (!window.JioGames.state?.Rewarded?.isAdReady) {
-        setTimeout(() => {
-          window.JioGames.cacheAd(AdType.Rewarded, {
-            onAdPrepared: () => console.log("Rewarded Ad cached successfully."),
-            onAdFailedToLoad: (error) => console.log("Rewarded failed: " + error),
-          });
-        }, 3000);
-      }
+      }, 5000);
     }
   } // end of initializeGame
   // Expose functions to the global scope for HTML onclick handlers
