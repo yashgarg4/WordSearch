@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
         words: ["PYTHON", "MUMBAI", "JAVA", "CPLUS", "SWIFT", "GO"],
       },
       {
-        gridSize: 9,
+        gridSize: 8,
         words: [
           "ANDROID",
           "KOTLIN",
