@@ -267,14 +267,14 @@ canvas {
 /* Game Screen Styling (from injected HTML) */
 .game-container {
   display: flex; /* Enable flexbox for internal layout */
-  flex-direction: column; /* Stack children vertically */
-  height: 100%; /* Take full height of its parent (.gameplay-content) */
+  flex-direction: column; /* Default: Stack children vertically */
+  height: 100%;
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
   color: white; /* Ensure text is visible on dark background */
   overflow: hidden; /* Crucial: prevent children from overflowing and causing scroll */
-  box-sizing: border-box; /* Ensure padding is included in width/height calculations */
+  box-sizing: border-box;
 }
 
 .progress-bar-wrapper {
@@ -505,10 +505,29 @@ canvas {
   opacity: 0.4;
 }
 
-.game-container > .btn { /* End Game button */
-  flex-shrink: 0; /* Prevent shrinking */
-  margin-top: auto; /* Pushes to bottom if .game-container has extra vertical space */
+/* New Home button style for gameplay screen */
+#game-home-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  background-color: #fff; /* Similar to pause button */
+  color: crimson; /* From original .btn style */
+  font-size: 1.4rem; /* Icon size */
+  font-weight: bold; /* From original .btn style */
+  border: none; /* Similar to pause button */
+  border-radius: 50%; /* Round */
+  cursor: pointer;
+  padding: 0; /* Remove padding for icon button */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Similar to pause button */
+  z-index: 20; /* Same as pause button */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* Helps center emoji */
 }
+
 /* Responsive adjustments for smaller screens */
 @media (max-width: 600px) {
   .title {
@@ -564,6 +583,13 @@ canvas {
 
   .game-container h1 { /* Level title */
     font-size: 1.5rem;
+  }
+  /* Adjust new home button for small screens */
+  #game-home-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem; /* Smaller icon */
+    /* top: 10px, right: 10px remains same as pause button offset */
   }
 
   .progress-bar-wrapper {
@@ -658,34 +684,115 @@ canvas {
 
   /* Gameplay area in landscape */
   .gameplay-content {
-    max-width: min(90vw, 700px); /* Allow game area to be a bit wider in landscape */
+    max-width: min(95vw, 1600px); /* Allow more width for larger landscape screens */
     max-height: 95vh;            /* Constrain height, ensure it fits */
-    padding: 15px;
+    padding: clamp(10px, 2vh, 20px); /* Responsive padding */
     /* Adjust base font size for landscape to prevent text elements from being too large vertically */
-    font-size: clamp(1.1rem, 2.5vh, 1.5rem); 
-    /* overflow-y: auto; Removed to prevent scrolling */
+    font-size: clamp(1rem, 2.2vh, 1.4rem); /* Slightly smaller base for more room */
   }
 
   .game-container {
-     max-width: 100%; /* Allow game container to fill the new gameplay-content width */
-     padding: 10px; /* Reduce padding for landscape */
+    flex-direction: row; /* Arrange columns side-by-side */
+    align-items: stretch; /* Make columns attempt equal height */
+    gap: clamp(15px, 2vw, 30px); /* Gap between columns */
+    max-width: 100%;
+    padding: clamp(5px, 1.5vh, 15px);
+    height: 100%; /* Ensure game-container tries to fill gameplay-content height */
+  }
+
+  .game-column-left, .game-column-right {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(5px, 1vw, 10px); /* Inner padding for columns */
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent content from breaking out, children will handle their own scroll if needed */
+  }
+
+  .game-column-left {
+    flex-basis: clamp(35%, 30vw, 40%); /* Responsive width: min, preferred, max */
+    min-width: 200px; /* Minimum width for the left column */
+    gap: clamp(10px, 2vh, 15px); /* Vertical gap for items in left column */
+  }
+  .game-column-left header { /* Contains title and progress bar */
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center header content */
+  }
+
+  .game-column-right {
+    flex-basis: clamp(55%, 60vw, 65%); /* Responsive width for the right column */
+    min-width: 250px; /* Minimum width for the right column */
+    justify-content: center; /* Center items vertically, or use space-between if preferred */
+    align-items: center; /* Center grid and timer horizontally */
+    gap: clamp(10px, 2vh, 15px); /* Vertical gap for items in right column */
+  }
+
+  .game-container h1 { /* Level title in left column */
+    font-size: clamp(1.2rem, 3.5vh, 1.8rem); /* Responsive font size */
+    margin-bottom: clamp(8px, 1.5vh, 12px);
+    text-align: center;
+  }
+
+  .progress-bar-wrapper { /* In left column */
+    height: clamp(15px, 2.5vh, 20px);
+    width: 90%; /* Control width of progress bar */
+    margin-bottom: 0; /* Gap handled by parent .game-column-left's gap */
+  }
+
+  .words-box { /* In left column */
+    flex-grow: 1; /* Take remaining vertical space */
+    min-height: 0; /* Crucial for flex-grow and overflow */
+    overflow-y: auto; /* Enable scrolling for word list */
+    width: 100%; /* Fill its column width */
+    padding: clamp(10px, 2vh, 15px); /* Responsive padding */
+    margin: 0; /* Remove original margins */
+    box-sizing: border-box;
+  }
+  .words-box h2 {
+    font-size: clamp(1.1rem, 3vh, 1.5rem); /* Responsive font size */
+    margin-bottom: clamp(8px, 1.5vh, 12px);
   }
 
   #words-list {
-    font-size: clamp(0.9rem, 2.5vh, 1.1rem);
-    gap: clamp(10px, 1.5vw, 15px);
+    font-size: clamp(0.85rem, 2.5vh, 1.1rem); /* Responsive font size */
+    gap: clamp(8px, 1vh, 10px); /* Responsive gap */
+    flex-direction: column; /* Stack words vertically in landscape for better fit */
+    align-items: flex-start; /* Align words to the start of the list */
+  }
+   #words-list li {
+    padding: clamp(2px, 0.5vh, 4px) 0;
+    padding: clamp(3px, 0.5vh, 5px) 0;
   }
 
-  .words-box {
-    padding: 10px 15px;
+  .grid { /* In right column */
+    flex-grow: 1; /* Allow grid to take available vertical space */
+    width: clamp(200px, 90%, 700px); /* Responsive width: min, preferred (relative to column), max */
+    max-height: 100%; /* Allow grid to use full height of its flex item space */
+    margin-top: 0;
+    margin-bottom: 0; /* Gap handled by parent .game-column-right's gap */
+    width: auto; /* Let aspect ratio and max-width/height determine size */
+    height: auto; /* Let aspect ratio and max-width/height determine size */
   }
-   .words-box h2 {
-    font-size: clamp(1rem, 3vh, 1.3rem);
+
+  .right-column-bottom-group {
+    /* This group is removed from HTML for landscape, timer is now a direct child of .game-column-right */
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* align-items: center; */
+    /* gap: clamp(8px, 1.5vh, 12px); */
+    /* width: 100%; */
   }
+
+  /* Styling for .right-column-bottom-group > .btn is removed as button moved */
 
   /* Specific adjustments for very short screens (common in phone landscape) */
   @media (max-height: 480px) {
     .overlay .title { font-size: 2rem; }
+    #timer { /* In right column, below grid */
+      font-size: clamp(1rem, 2.5vh, 1.3rem); /* Responsive font size */
+      flex-shrink: 0; /* Prevent timer from shrinking */
+    }
     .overlay .subtitle { font-size: 1rem; margin-bottom: 15px;}
     .overlay .btn { font-size: 0.9rem; padding: 8px 20px; }
 
@@ -703,36 +810,64 @@ canvas {
     }
 
     .gameplay-content {
-      padding: 10px;
+      padding: clamp(5px, 1vh, 10px);
       font-size: 1rem; /* Reduce base font for very short game area */
-      /* max-height: 95vh; */ /* Already inherited from general landscape */
-      max-height: 95vh; /* Ensure it fits vertically */
     }
+
+    .game-container {
+      gap: 10px; /* Reduced gap between columns */
+      padding: 5px;
+    }
+
+    .game-column-left, .game-column-right {
+      padding: 5px;
+      gap: 8px; /* Reduced gap for very short screens */
+    }
+    .game-column-left {
+        flex-basis: 38%; /* Adjust basis slightly if needed */
+    }
+    .game-column-right {
+        flex-basis: 58%;
+    }
+
     .game-container h1 { /* Level title */
       font-size: 1.1rem;
       margin-bottom: 5px; /* Reduce margin */
     }
      .progress-bar-wrapper {
       height: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      width: 100%;
     }
-    .game-container { /* Further reduce padding for very short landscape */
-        padding: 5px;
-    }
+
     .words-box h2 {
       font-size: 0.9rem;
       margin-bottom: 8px;
     }
-    #words-list li, #words-list {
-      font-size: 0.75rem; /* Further reduce word list font */
-      padding: 2px 0;
+     .words-box { padding: 8px; }
+    #words-list {
+      font-size: 0.7rem; /* Further reduce word list font */
       gap: 5px;
     }
-    .grid { gap: 4px; }
-    #timer { font-size: 0.8rem; margin-top: 5px; }
-    .game-container .btn { /* e.g., End Game button */
-        font-size: 0.9rem;
-        padding: 8px 15px;
+     #words-list li { padding: 1px 0; }
+
+    .grid {
+      gap: 3px; /* Smaller gap for cells */
+      width: 95%; /* Allow grid to use more of its column width */
+      /* max-height: will be constrained by flex-grow and parent height */
+    }
+    /* .right-column-bottom-group is removed */
+    .right-column-bottom-group {
+        gap: 5px;
+    }
+    /* Adjust new home button for very short landscape screens */
+    #game-home-btn {
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem; /* Slightly smaller icon */
+    }
+    #timer {
+      font-size: 0.8rem;
     }
   }
 }
