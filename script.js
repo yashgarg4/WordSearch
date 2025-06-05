@@ -151,6 +151,8 @@ document.addEventListener("DOMContentLoaded", () => {
   animate();
   window.addEventListener("resize", handleResize);
 
+  let timerInterval; // Declare timerInterval here to be accessible by endGame and initializeGame
+
   function toggleInstructions() {
     const panel = document.getElementById("instructions");
     const blur = document.getElementById("blur");
@@ -166,6 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const gameplayPanel = document.getElementById("gameplay-panel");
     const overlay = document.querySelector(".overlay");
 
+    clearInterval(timerInterval); // Clear the game timer
     if (gameplayPanel) gameplayPanel.classList.remove("show");
     if (overlay) overlay.style.display = "flex";
 
@@ -190,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (gameplayContent) {
       gameplayContent.innerHTML = `
         <button id="pause-btn" class="pause-btn">⏸️</button>
-        <button id="game-home-btn" class="btn" onclick="endGame()">🏠</button>
+        <button id="game-home-btn" class="btn" onclick="endGame()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
   <div class="game-container">
     <div class="game-column-left">
       <header>
@@ -268,7 +271,6 @@ document.addEventListener("DOMContentLoaded", () => {
     tryCache();
 
     let timeLeft = 40;
-    let timerInterval;
     let extraTimeUsed = false;
     let continueUsed = false;
     let isPaused = false;
@@ -606,6 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const popupEl = document.getElementById(popupId);
       if (popupEl) popupEl.classList.remove("hidden");
       setPauseButtonEnabled(false);
+      setHomeButtonEnabled(false);
 
       // For level-complete-popup, an ad is shown. This might interfere with button interactivity.
       if (popupId === "level-complete-popup") {
@@ -633,6 +636,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function hidePopup(popupId) {
       const popupEl = document.getElementById(popupId);
       if (popupEl) popupEl.classList.add("hidden");
+      // Re-enable buttons only if no other popup is immediately shown.
     }
 
     // Attach event listeners to dynamically added buttons
@@ -653,6 +657,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         // tryCache();
         setPauseButtonEnabled(true);
+        setHomeButtonEnabled(true);
         foundWords.clear();
         setupLevel(currentLevel);
       });
@@ -672,6 +677,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // tryCache();
         currentLevel++;
         setPauseButtonEnabled(true);
+        setHomeButtonEnabled(true);
         if (currentLevel < levels.length) {
           foundWords.clear();
           setupLevel(currentLevel);
@@ -715,6 +721,7 @@ document.addEventListener("DOMContentLoaded", () => {
               extraTimeUsed = true;
               hidePopup("continue-popup");
               setPauseButtonEnabled(true);
+              setHomeButtonEnabled(true);
               startTimer();
             }
           },
@@ -728,6 +735,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (continueNoBtn)
       continueNoBtn.addEventListener("click", () => {
         hidePopup("continue-popup");
+        // setHomeButtonEnabled(true) is implicitly handled by showGameOverPopup calling showPopup
         showGameOverPopup();
       });
 
@@ -739,6 +747,7 @@ document.addEventListener("DOMContentLoaded", () => {
         extraTimeUsed = false;
         continueUsed = false;
         setPauseButtonEnabled(true);
+        setHomeButtonEnabled(true);
         setupLevel(currentLevel);
         updateEndGameButtonWidth(); // Update button width on replay
         tryCache();
@@ -779,6 +788,17 @@ document.addEventListener("DOMContentLoaded", () => {
           pauseBtn.classList.remove("disabled");
         } else {
           pauseBtn.classList.add("disabled");
+        }
+      }
+    }
+
+    function setHomeButtonEnabled(enabled) {
+      const homeBtnGame = document.getElementById("game-home-btn");
+      if (homeBtnGame) {
+        if (enabled) {
+          homeBtnGame.classList.remove("disabled");
+        } else {
+          homeBtnGame.classList.add("disabled");
         }
       }
     }
