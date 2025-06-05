@@ -12,6 +12,15 @@
     ></script>
   </head>
   <body>
+    <div id="splash-screen">
+      <div class="splash-content">
+        <!-- You can put a logo here, or just the game title -->
+        <h1 class="splash-title">Word Search</h1>
+        <p class="splash-loading">Loading...</p>
+        <!-- Optional: Add a simple spinner or animation later -->
+      </div>
+    </div>
+
     <canvas id="bg"></canvas>
     <div class="blur-overlay" id="blur"></div>
 
@@ -39,7 +48,7 @@
     <div class="overlay">
       <div class="title">WORD</div>
       <div class="subtitle">SEARCH</div>
-      <button class="btn" onclick="startGame()">Level 1</button>
+      <button class="btn" onclick="startGame()">Play</button>
     </div>
 
     <div class="gameplay-panel" id="gameplay-panel">
