@@ -458,9 +458,9 @@ canvas {
 /* Pause Overlay */
 /* .overlay class is already defined for the home screen, let's use #pause-overlay for specificity */
 #pause-overlay.overlay { /* More specific selector for pause overlay */
-  position: fixed;
-  top: 458px; /* Corrected for full screen overlay */
-  left: 206px; /* Corrected for full screen overlay */
+  /* position: fixed; */ /* Keep position fixed */
+  /* top: 458px; */ /* Remove incorrect fixed positioning */
+  /* left: 206px; */ /* Remove incorrect fixed positioning */
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
@@ -505,6 +505,11 @@ canvas {
   opacity: 0.4;
 }
 
+/* Disabled state for the game's top-right home button */
+#game-home-btn.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
 /* New Home button style for gameplay screen */
 #game-home-btn {
   position: absolute;
@@ -681,6 +686,14 @@ canvas {
     font-size: clamp(0.9rem, 3vh, 1rem);
     padding: clamp(8px, 1.8vh, 10px) clamp(15px, 2.5vw, 18px);
   }
+  
+  /* Center the pause overlay in landscape */
+  #pause-overlay.overlay {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; /* Ensure it covers the full screen */
+  }
 
   /* Gameplay area in landscape */
   .gameplay-content {
@@ -776,15 +789,6 @@ canvas {
     height: auto; /* Let aspect ratio and max-width/height determine size */
   }
   .grid { order: 2; } /* Place grid below the timer */
-
-  .right-column-bottom-group {
-    /* This group is removed from HTML for landscape, timer is now a direct child of .game-column-right */
-    /* display: flex; */
-    /* flex-direction: column; */
-    /* align-items: center; */
-    /* gap: clamp(8px, 1.5vh, 12px); */
-    /* width: 100%; */
-  }
 
   /* Styling for .right-column-bottom-group > .btn is removed as button moved */
 
