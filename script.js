@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("bg");
+  const splashScreen = document.getElementById("splash-screen");
+  const mainOverlay = document.querySelector(".overlay"); // This is the home screen overlay
+
   if (!canvas) {
     console.error(
       "Canvas element with ID 'bg' not found. Ensure it exists in your HTML and the script is loaded correctly."
@@ -151,6 +154,30 @@ document.addEventListener("DOMContentLoaded", () => {
   animate();
   window.addEventListener("resize", handleResize);
 
+  // Splash Screen Logic
+  if (splashScreen && mainOverlay) {
+    mainOverlay.style.display = "none"; // Hide main home overlay initially
+
+    setTimeout(() => {
+      splashScreen.style.opacity = "0";
+      // Wait for the fade-out transition to complete before hiding it
+      splashScreen.addEventListener(
+        "transitionend",
+        () => {
+          splashScreen.style.display = "none";
+          mainOverlay.style.display = "flex"; // Show main home overlay
+        },
+        { once: true }
+      ); // Ensure the event listener is removed after firing once
+    }, 2500); // Adjust splash screen duration (milliseconds)
+  } else {
+    // Fallback if splash screen or main overlay isn't found
+    if (mainOverlay && getComputedStyle(mainOverlay).display === "none") {
+      mainOverlay.style.display = "flex"; // Ensure main overlay is visible if no splash
+    }
+    if (!splashScreen)
+      console.warn("Splash screen element not found. Skipping splash.");
+  }
   let timerInterval; // Declare timerInterval here to be accessible by endGame and initializeGame
 
   function toggleInstructions() {
@@ -610,7 +637,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setPauseButtonEnabled(false);
       setHomeButtonEnabled(false);
 
-      // For level-complete-popup, an ad is shown. This might interfere with button interactivity.
       if (popupId === "level-complete-popup") {
         window.JioGames?.showAd(AdType.Interstitial, {
           onAdClosed: () => {
