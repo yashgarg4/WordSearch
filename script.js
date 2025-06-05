@@ -190,22 +190,28 @@ document.addEventListener("DOMContentLoaded", () => {
     if (gameplayContent) {
       gameplayContent.innerHTML = `
         <button id="pause-btn" class="pause-btn">⏸️</button>
+        <button id="game-home-btn" class="btn" onclick="endGame()">🏠</button>
   <div class="game-container">
-    <header>
-      <h1 id="level-title">Level 1</h1>
-      <div class="progress-bar-wrapper">
-        <div id="progress-bar"></div>
-      </div>
-    </header>
+    <div class="game-column-left">
+      <header>
+        <h1 id="level-title">Level 1</h1>
+        <div class="progress-bar-wrapper">
+          <div id="progress-bar"></div>
+        </div>
+      </header>
+      <section class="words-box">
+        <h2>Words to Find</h2>
+        <ul id="words-list"></ul>
+      </section>
+    </div>
 
-    <section class="words-box">
-      <h2>Words to Find</h2>
-      <ul id="words-list"></ul>
-    </section>
-
-    <section id="grid" class="grid"></section>
-    <button class="btn" onclick="endGame()">Home</button>
+    <div class="game-column-right">
+      <section id="grid" class="grid"></section>
+      <div id="timer">Time: 40s</div>
+    </div>
   </div>
+
+  <!-- Popups remain outside the two-column structure but within gameplay-content -->
 
   <div id="level-complete-popup" class="popup hidden">
     <div class="popup-content">
@@ -216,8 +222,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     </div>
   </div>
-
-  <div id="timer">Time: 40s</div>
 
   <!-- Continue Popup -->
   <div id="continue-popup" class="popup hidden">
@@ -491,10 +495,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Function to set the End Game button width to half the grid width
     function updateEndGameButtonWidth() {
       const gridContainer = document.getElementById("grid");
-      const endGameButton = document.querySelector(".game-container > .btn");
+      // Selector updated to the new ID, though size setting is commented out
+      const endGameButton = document.getElementById("game-home-btn");
       if (gridContainer && endGameButton) {
-        const gridWidth = gridContainer.offsetWidth;
-        endGameButton.style.width = `${gridWidth / 2}px`;
+        const gridContainerWidth = gridContainer.offsetWidth;
+        // const buttonDiameter = gridContainerWidth / 2; // No longer setting size dynamically
+        // endGameButton.style.width = `${buttonDiameter}px`;
+        // endGameButton.style.height = `${buttonDiameter}px`;
       }
     }
 
@@ -599,14 +606,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const popupEl = document.getElementById(popupId);
       if (popupEl) popupEl.classList.remove("hidden");
       setPauseButtonEnabled(false);
+
+      // For level-complete-popup, an ad is shown. This might interfere with button interactivity.
       if (popupId === "level-complete-popup") {
+        // console.log("Attempting to show ad for level-complete-popup.");
+        // TEMPORARY TEST: Comment out the following ad call to check if popup buttons become responsive.
+        /*
         window.JioGames?.showAd(AdType.Interstitial, {
           onAdClosed: () => {
-            console.log("Interstitial closed.");
-            window.JioGames.state.Interstitial.isAdReady = false;
+            console.log("Interstitial closed for level-complete-popup.");
+            // Ensure the game UI is fully interactive here if needed.
+            // Robust check for state object before modification:
+            if (window.JioGames && window.JioGames.state && window.JioGames.state.Interstitial) {
+              window.JioGames.state.Interstitial.isAdReady = false;
+            }
           },
-          onAdFailedToLoad: (err) => console.log("Interstitial error: " + err),
+          onAdFailedToLoad: (err) => console.log("Interstitial error for level-complete-popup: " + err),
         });
+        */
+        console.log(
+          "Ad call for level-complete-popup is currently commented out for testing button functionality."
+        );
       }
     }
 
