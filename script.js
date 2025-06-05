@@ -612,24 +612,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // For level-complete-popup, an ad is shown. This might interfere with button interactivity.
       if (popupId === "level-complete-popup") {
-        // console.log("Attempting to show ad for level-complete-popup.");
-        // TEMPORARY TEST: Comment out the following ad call to check if popup buttons become responsive.
-        /*
         window.JioGames?.showAd(AdType.Interstitial, {
           onAdClosed: () => {
             console.log("Interstitial closed for level-complete-popup.");
-            // Ensure the game UI is fully interactive here if needed.
-            // Robust check for state object before modification:
-            if (window.JioGames && window.JioGames.state && window.JioGames.state.Interstitial) {
-              window.JioGames.state.Interstitial.isAdReady = false;
-            }
+            window.JioGames.state.Interstitial.isAdReady = false;
           },
-          onAdFailedToLoad: (err) => console.log("Interstitial error for level-complete-popup: " + err),
+          onAdFailedToLoad: (err) =>
+            console.log("Interstitial error for level-complete-popup: " + err),
         });
-        */
-        console.log(
-          "Ad call for level-complete-popup is currently commented out for testing button functionality."
-        );
       }
     }
 
