@@ -229,6 +229,7 @@ canvas {
   /* width: 100%; Removed, let max-width define it */
   overflow: hidden; /* Prevent internal content from causing scroll on this element */
   max-width: 600px;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .top-panel {
@@ -653,6 +654,13 @@ canvas {
   .pause-btn {
     font-size: 20px;
     padding: 5px 10px;
+  }
+}
+
+/* Portrait specific height for gameplay content */
+@media (orientation: portrait) {
+  .gameplay-content {
+    height: 85vh; /* Make gameplay content taller in portrait */
   }
 }
 
