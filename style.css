@@ -711,6 +711,7 @@ canvas {
   .game-column-left {
     flex-basis: clamp(35%, 30vw, 40%); /* Responsive width: min, preferred, max */
     min-width: 200px; /* Minimum width for the left column */
+    align-items: center; /* Center children horizontally */
     gap: clamp(10px, 2vh, 15px); /* Vertical gap for items in left column */
   }
   .game-column-left header { /* Contains title and progress bar */
@@ -774,6 +775,7 @@ canvas {
     width: auto; /* Let aspect ratio and max-width/height determine size */
     height: auto; /* Let aspect ratio and max-width/height determine size */
   }
+  .grid { order: 2; } /* Place grid below the timer */
 
   .right-column-bottom-group {
     /* This group is removed from HTML for landscape, timer is now a direct child of .game-column-right */
